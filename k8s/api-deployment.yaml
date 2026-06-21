@@ -1,0 +1,58 @@
+﻿apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: serviceapi
+spec:
+  replicas: 4
+  selector:
+    matchLabels:
+      app: serviceapi
+  template:
+    metadata:
+      labels:
+        app: serviceapi
+    spec:
+      containers:
+      - name: serviceapi
+        image: sakshim2311/serviceapi:v2
+        ports:
+        - containerPort: 8080
+        env:
+        - name: DB_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: postgres-secret
+              key: POSTGRES_PASSWORD
+        - name: ASPNETCORE_ENVIRONMENT
+          value: "Production"
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 8080
+          initialDelaySeconds: 30
+          periodSeconds: 10
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 8080
+          initialDelaySeconds: 10
+          periodSeconds: 5
+        resources:
+          requests:
+            memory: "128Mi"
+            cpu: "100m"
+          limits:
+            memory: "256Mi"
+            cpu: "500m"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: serviceapi-service
+spec:
+  type: LoadBalancer
+  selector:
+    app: serviceapi
+  ports:
+  - port: 80
+    targetPort: 8080
