@@ -12,7 +12,7 @@ metadata:
   name: postgres-secret
 type: Opaque
 data:
-  POSTGRES_PASSWORD: eW91cnBhc3N3b3JkMTIz
+  POSTGRES_PASSWORD: ZHVtbXlQYXNzd29yZDEyMw==
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
@@ -31,6 +31,8 @@ metadata:
   name: postgres
 spec:
   replicas: 1
+  strategy:
+    type: Recreate
   selector:
     matchLabels:
       app: postgres

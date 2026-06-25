@@ -3,18 +3,21 @@ kind: Deployment
 metadata:
   name: serviceapi
 spec:
+  revisionHistoryLimit: 3  
   replicas: 4
   selector:
     matchLabels:
       app: serviceapi
   template:
     metadata:
+      annotations:
+        kubernetes.io/change-cause: "Updated image to v3"
       labels:
         app: serviceapi
     spec:
       containers:
       - name: serviceapi
-        image: sakshim2311/serviceapi:v2
+        image: sakshim2311/serviceapi:v3
         ports:
         - containerPort: 8080
         env:
